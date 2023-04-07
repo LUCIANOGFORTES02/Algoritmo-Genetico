@@ -76,11 +76,15 @@ let pop=[];
 
 console.log(populacao = gerarPopulacao(cidades));
 
+let repeticoes=0;
+while(repeticoes<100){
+
 //Seleção (os dois com menlhores coeficientes)
 
 function selecao(pop){
 let sum=0,probabilidade=[];
 let coeficiente=0,sumCoenficiente=0;
+/*
 for(let i =0;i<pop.length;i++){
     if(i%2!=0){//As distancias estão na posição impar do vetor
        // sum+=pop[i]
@@ -88,6 +92,7 @@ for(let i =0;i<pop.length;i++){
 
     }
  }
+ */
 //console.log(sum);
 //console.log(sumCoenficiente);
 
@@ -96,27 +101,39 @@ for(let i =0;i<pop.length;i++){
 
     if(i%2!=0){//As distancias estão na posição impar do vetor
       coeficiente =(1/pop[i]);
-     // probabilidade[i]=(coeficiente/sumCoenficiente);
-     probabilidade[i]= coeficiente;
+    //probabilidade[i]=(coeficiente/sumCoenficiente);
+     probabilidade[i] = coeficiente;
     }
- }
+}
+
+//console.log("Probabilidade",probabilidade);
+
+
 const pais=[];
 for(let i =0;i<2;i++){
 let x=0,y=0;
     //const r = Math.random();
 //Pega os dois com maior probabilidade
 for(let j=0 ;j<probabilidade.length;j++){
-     if(probabilidade[j]>x){
+     if(probabilidade[j]>=x){
         x=probabilidade[j];
         y=j
-     }
+    }
 }
 
-    pais.push(pop[y-1]);
 
+pais.push(pop[y-1]);
+/*
+if(i==0){
+    pais.push(pop[y-1]);
+}
+if(i==1){
+    pais.push(pop[y-1]);
+}
+*/
     probabilidade.splice(y,1);
     probabilidade.splice(y-1,1);
-
+//console.log(y);
 //console.log(probabilidade);
    
 }
@@ -124,38 +141,36 @@ return pais;
 }
 
 let  pais =[];
-console.log("Pais");
-console.log(pais= selecao(populacao));
-
+//console.log("Pais");
+//console.log(pais= selecao(populacao));
+pais= selecao(populacao);
 
 //Crossover(Reprodução) 
 //Pega os pais /Não pode repetir a cidades
 
 function crossover (pais){
 let posicaoDoCorte =Math.floor (Math.random() * (cidades.length-3)+1);//Posição em que será dividido o cromossomo
-console.log(posicaoDoCorte);
-let child1=[],childTwo,childOne;
+//console.log(posicaoDoCorte);
+let child1=[];
+let childTwo=[];let childOne=[];
 let child2=[];
 childOne=pais[0];
 childTwo=pais[1];
-//console.log(child1);
-/*
-for(let i =0;i<posicaoDoCorte+1;i++){//Primeira metade do cromossomo
-    child1.push(childOne[i]);
-    child2.push(childTwo[i]);
-}
-for(let i =posicaoDoCorte+1;i<cidades.length;i++){//Segunda metade do cromossomo 
-    child1.push(childTwo[i]);
-    child2.push(childOne[i]);
-}
 
-*/
+if (Array.isArray(childOne)) {
+    child1=childOne.slice(0,posicaoDoCorte);
+} else {
+    console.log('The value is not an array');
+  }
+
 //Primeiro filho
 //Primeira metade do cromossomo
-child1=childOne.slice(0,posicaoDoCorte);
+//child1=childOne.slice(0,posicaoDoCorte);
+//child1=childOne.slice(0,posicaoDoCorte);
+
 
 for(let i =posicaoDoCorte;i<childTwo.length;i++){  
-    let gene=   childTwo[i];
+    let gene = childTwo[i];
     if (! child1.includes(gene)){
         child1.push(gene);
     }
@@ -172,76 +187,65 @@ for (let i =0;i<childOne.length;i++){
                 if (!child1.includes(gene2)){
                     child1.push(gene2);
                     break
-                }
-                     
+                }                  
+        }
     }
 }
-
-}
-
 
 //segundo filho.
-child2=childTwo.slice(0,posicaoDoCorte);
+//child2=childTwo.slice(0,posicaoDoCorte);
+
+if (Array.isArray(childTwo)) {
+    child2=childTwo.slice(0,posicaoDoCorte);
+} else {
+    console.log('The value is not an array');
+}
+
 for(let i =posicaoDoCorte;i<childOne.length;i++){  
-    let gene=   childOne[i];
-    if (! child1.includes(gene)){
-        child1.push(gene);
+    let gene = childOne[i];
+    if (! child2.includes(gene)){
+        child2.push(gene);
     }
 }
 
-
-
-console.log("Filhos sem repetição ");
-console.log(child1);
-console.log(child2);
-/*
-//Evitar cidades repetidas
-//Para encontrar genes duplicados, o código usa uma list comprehension para criar uma nova lista contendo todos os genes iguais ao gene atual (genes[gene]). Em seguida, a função len() é usada para determinar o tamanho dessa lista. Se o tamanho da lista é maior que 1, significa que o gene atual está duplicado.
-for (let gene =0 ;gene<cidades.length;gene++){//Caso troque por um valor repitido é executado várias vezes
-let repetido=[],repetido2=[],temp,usadas=[];
-for(let j=0; j<cidades.length;j++){
-    for (let i =0 ;i<cidades.length;i++){
-        usadas.push(child1[i]);
-        if(child1[i]==child1[gene]){//Encontrar a repetição
-            repetido.push(child1[i]);
-            //if(repetido.length>1){//tirar a repetição
-              //  temp=child1[i];
-                //child1[i]=child2[i];
-                //child2[i]=temp;
-            //}
-            
-
-
-            if(child2[i]==child2[gene]){//Encontrar a repetição
-                repetido2.push(child2[i]);
-                if(repetido2.length>1){//tirar a repetição
-                    temp=child2[i];
-                    child2[i]=child1[i];
-                    child1[i]=temp;
-                }
-            }
+//Copia os genes restantes garantindo que não a repetição
+for (let i =0;i<childTwo.length;i++){
+    let gene=   childTwo[i];
+    if (!child2.includes(gene)){
+        child2.push(gene);
+    }
+    else{
+        for(let j =0;j<childOne.length;j++){
+            let gene2= childOne[j];
+                if (!child2.includes(gene2)){
+                    child2.push(gene2);
+                    break
+                }                     
         }
+    }
+
 }
-    
-}
-}
-console.log("Novos pais sem repetição")
-console.log(child1);
-console.log(child2);
-*/
+
+
+//console.log("Filhos sem repetição ");
+//console.log(child1);
+//console.log(child2);
+
 let child=[];
 child[0]=child1;
 child[1]=child2;
 return child;
 }
 let child=[];
-console.log('Resultado da reprodução', child=crossover(pais));
+//console.log('Resultado da reprodução', child=crossover(pais));
+child=crossover(pais);
+
 //Mutação - Sorteia um valor de o a 100 % se corresponder a taxa de mutação altera os genes
 function mutacao(mutacaoRate,child){
 let child1=[],child2=[],gene1,gene2,temp;
 child1=child[0];
 child2=child[1];
-console.log(mutacaoRate)
+//console.log(mutacaoRate)
 
 if (mutacaoRate >= Math.random()){
       gene1=Math.floor (Math.random() * ((cidades.length-1)-0)+0);
@@ -262,19 +266,38 @@ if (mutacaoRate >= Math.random()){
 }
 
 
-console.log("Resultado da mutação");
-console.log(child1);
-console.log(child2);
+//console.log("Resultado da mutação");
+//console.log(child1);
+//console.log(child2);
 
 }
 let p=1;
 mutacao(0.02,child);
 
-//Adicionar os filhos a população substituindo do pais
+//Abordagem elitista: Os melhores indivíduos da população atual são mantidos inalterados na nova geração, enquanto os filhos gerados substituem os indivíduos menos aptos da população atual.
 
 function novaPopulacao(pop,pais,child){
-//Encontrar os pais e substituir
-
+//Abordagem elitista
+let maior=0,x=0;  
+for (let i =0;i<pop.length;i++){
+    if (pop[i]>maior){
+        maior=pop[i];
+        x=i;
+    }
+}
+    pop[x]=child[0];
+    pop[x+1]=distancia(child[0]);
+    maior=0;x=0;
+    for (let i =0;i<pop.length;i++){
+        if (pop[i]>maior){
+            maior=pop[i];
+            x=i;
+        }
+        pop[x]=child[1];
+        pop[x+1]=distancia(child[1]);
+    }
+//Abordagem geracional
+/*
 for (let i =0 ;i<pop.length;i++){
     if (pop[i]==pais[0] ){
         pop[i]=child[0];
@@ -282,17 +305,37 @@ for (let i =0 ;i<pop.length;i++){
     }
     if (pop[i]==pais[1]){
         pop[i]=child[1];
-        pop[i+1]=distancia(child[1]);//Não está atualizando as distâncias por causa do crossover está errado    
+        pop[i+1]=distancia(child[1]);    
     }
 
 }
-console.log(distancia(child[0]));
-console.log(distancia(child[1]));
+*/
+//console.log(distancia(child[0]));
+//console.log(distancia(child[1]));
 
-console.log("Nova população",pop);
+//console.log("Nova população",pop);
+
+return pop;
 
 }
-
-novaPopulacao(populacao,pais,child)
+populacao= novaPopulacao(populacao,pais,child)
  
-//Termino por parada (Quando o número x de gerações tiverem o menor valor da distância igual) 
+//Melhor resultado de cada geração
+function menorDistancia(pop){
+    //Limite de gerações 1000 repetições
+console.log("Geração :",repeticoes); 
+let menor=400;  
+for (let i =0;i<pop.length;i++){
+    if (pop[i]<menor){
+        menor=pop[i];
+    }
+
+}
+console.log(menor);
+   
+}
+
+menorDistancia(populacao);
+
+repeticoes++;
+}
